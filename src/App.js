@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import Card from "./components/Card/Card";
+import { Container } from './components/styles/Container.styled';
+import { useQuery, gql } from '@apollo/client';
 
-function App() {
+
+const App = () => {
+
+    const GET_CHARACTERS = gql`
+    query Getcharacters {
+      characters {
+        results {
+          id
+          name
+          status
+          species
+          type
+          gender
+          image
+          created
+        }
+      }
+    }
+  `;
+
+  const { loading, error, data } = useQuery(GET_CHARACTERS);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+    <>
+       <Container>
+          {data.characters.results.map((item, index) => (
+            <Card key={index} item={item} />
+          ))}
+        </Container>
+    </>
+  )
+};
 
 export default App;
