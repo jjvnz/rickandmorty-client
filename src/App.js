@@ -1,6 +1,7 @@
 import Card from "./components/Card/Card";
 import { Container } from './components/styles/Container.styled';
 import { useQuery, gql } from '@apollo/client';
+import Global from "./components/styles/Global.styled";
 
 
 const App = () => {
@@ -30,6 +31,7 @@ const App = () => {
 
   return (
     <>
+      <Global/>
        <Container>
           {data.characters.results.map((item, index) => (
             <Card key={index} item={item} />
