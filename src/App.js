@@ -24,7 +24,6 @@ const App = () => {
     `;
 
   const { loading, error, data } = useQuery(GET_CHARACTERS);
-  console.log(data);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
