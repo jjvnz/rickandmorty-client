@@ -5,17 +5,17 @@ import { useQuery, gql } from '@apollo/client';
 
 const App = () => {
 
-    const GET_CHARACTERS = gql`
+  const GET_CHARACTERS = gql`
       query Getcharacters {
-        characters {
-          results {
-            id
+        characters{
+          results{
+            image
             name
+            id
             status
-            species
             type
             gender
-            image
+            species
             created
           }
         }
@@ -23,6 +23,7 @@ const App = () => {
     `;
 
   const { loading, error, data } = useQuery(GET_CHARACTERS);
+  console.log(data);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;

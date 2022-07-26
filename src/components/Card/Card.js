@@ -20,9 +20,8 @@ export default function Card({ item: { id, name, status, image, species, type, g
         <h3>Created: {created}</h3>
         <hr/>
       </div>
-
       <div>
-        <img src={`${image}`} alt='' />
+        <img src={image} alt='' />
       </div>
     </StyledCard>
   )

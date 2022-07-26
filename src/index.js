@@ -10,7 +10,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
 
 const client = new ApolloClient({
-  uri: 'https://rickandmortyapi.com/graphql',
+  uri: process.env.REACT_APP_API,
   cache: new InMemoryCache(),
 });
 
