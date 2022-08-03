@@ -2,7 +2,32 @@ import React from 'react';
 import { StyledCard } from '../styles/Card.styled';
 
 
-export default function Card({ item: { id, name, status, image, species, type, gender, created, location, origin } }) {
+function padTo2Digits(num) {
+  return num.toString().padStart(2, '0');
+}
+
+function formatDate(date) {
+  return [
+    padTo2Digits(date.getDate()),
+    padTo2Digits(date.getMonth() + 1),
+    date.getFullYear(),
+  ].join('/');
+}
+
+export default function Card({ 
+    item: { id,
+      name,
+      status, 
+      image, 
+      species, 
+      type, 
+      gender, 
+      created, 
+      location, 
+      origin 
+    } 
+  }) {
+
   return (
     <StyledCard layout={id % 1 === 0 && 'row-reverse'}>
       <div>
@@ -21,9 +46,9 @@ export default function Card({ item: { id, name, status, image, species, type, g
         <hr/>
         <span>Origin: {origin["name"]}</span>
         <hr/>
-        <span>Created:{created}</span>
+        <span>Created: {formatDate(new Date(created))}</span>
+        <br/>
       </div>
-     
       <br/>
       <div>
         <img src={image} alt='img' />
