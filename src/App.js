@@ -2,6 +2,15 @@ import Card from "./components/Card/Card";
 import { Container } from './components/styles/Container.styled';
 import { useQuery, gql } from '@apollo/client';
 import Global from "./components/styles/Global.styled";
+import { ThemeProvider } from 'styled-components'
+
+
+const theme = {
+  colors: {
+    body: '#002449'
+  },
+  mobile: '768px',
+}
 
 
 const App = () => {
@@ -18,6 +27,12 @@ const App = () => {
             gender
             species
             created
+            location{
+              name
+            }
+            origin{
+              name
+            }
           }
         }
       }
@@ -30,12 +45,14 @@ const App = () => {
 
   return (
     <>
+    <ThemeProvider theme={theme}>
       <Global/>
        <Container>
-          {data.characters.results.map((item, index) => (
+          {data.characters.results?.map((item, index) => (
             <Card key={index} item={item} />
           ))}
         </Container>
+    </ThemeProvider>
     </>
   )
 };

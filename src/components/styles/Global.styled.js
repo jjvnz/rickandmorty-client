@@ -7,7 +7,7 @@ const GlobalStyles = createGlobalStyle`
     box-sizing: border-box;
   }
   body {
-    background:#002449;
+    background: ${({ theme }) => theme.colors.body};
     color: hsl(210, 100%, 14%);
     font-family: 'Oswald', sans-serif;
     font-size: 1.15em;
@@ -20,8 +20,6 @@ const GlobalStyles = createGlobalStyle`
   img {
     max-width: 100%;
   }
-
-
 `
 
 export default GlobalStyles;
