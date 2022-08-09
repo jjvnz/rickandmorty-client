@@ -1,10 +1,10 @@
 # Getting Started with Create React App
 
 
-##### Principal mente debera crear una variable de entorno llamanda `env.local` la cual debe contener la siguiente Estructura 
-- `REACT_APP_API=`
+##### Mainly you should create an environment variable called env.local which should contain the following Structure
+ - #####  `REACT_APP_API=`
 
-- puede usar el `env.template` renombrarlo y pegar la url de la graphql api rick and morty.
+- you can use the env.template rename it and paste the url of the rick and morty graphql api.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
