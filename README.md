@@ -1,7 +1,8 @@
-# Getting Started with Create React App 🚀
+
+# Rick and Morty GraphQL API Client 🚀
 
 ## Description
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). ⚛️
+This is a client that uses React js and Styled Components to consume the Rick and Morty GraphQL API. ⚛️👽
 
 ### Environment Variables
 Mainly, you should create an environment variable called `env.local` which should contain the following structure:
