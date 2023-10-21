@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import { Container } from "./components/styles/Container.styled";
 import Global from "./components/styles/Global.styled";
@@ -56,6 +56,13 @@ const App = () => {
     [getCharactersByName]
   );
 
+  const characterList = useMemo(() => {
+    return (
+      (searchData && searchData.characters.results) ||
+      (listData && listData.characters.results)
+    );
+  }, [searchData, listData]);
+
   // Efectos secundarios
   useEffect(() => {
     if (characterData) {
@@ -68,9 +75,7 @@ const App = () => {
   }, [handleButtonClick]);
 
   useEffect(() => {
-    if (searchQuery) {
-      getCharactersByName({ variables: { name: searchQuery } });
-    } else {
+    if (!searchQuery) {
       getPaginatedCharacters({
         variables: {
           status: statusFilter,
@@ -84,9 +89,14 @@ const App = () => {
     statusFilter,
     genderFilter,
     currentPage,
-    getCharactersByName,
     getPaginatedCharacters,
   ]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      getCharactersByName({ variables: { name: searchQuery } });
+    }
+  }, [searchQuery, getCharactersByName]);
 
   return (
     <>
@@ -118,10 +128,7 @@ const App = () => {
           />
 
           <CharacterList
-            characters={
-              (searchData && searchData.characters.results) ||
-              (listData && listData.characters.results)
-            }
+            characters={characterList}
             loading={searchLoading || listLoading}
           />
         </Container>
