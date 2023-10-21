@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyledCard } from '../styles/Card.styled';
 
-
 function padTo2Digits(num) {
   return num.toString().padStart(2, '0');
 }
@@ -13,47 +12,32 @@ function formatDate(date) {
     date.getFullYear(),
   ].join('/');
 }
-
-export default function Card({ 
-    item: { id,
-      name,
-      status, 
-      image, 
-      species, 
-      type, 
-      gender, 
-      created, 
-      location, 
-      origin 
-    } 
-  }) {
+export default function Card({ item }) {
+  const characterDetails = [
+    { label: 'Estatus', value: item.status },
+    { label: 'Species', value: item.species },
+    { label: 'Type', value: item.type },
+    { label: 'Gender', value: item.gender },
+    { label: 'Location', value: item.location.name },
+    { label: 'Origin', value: item.origin.name },
+    { label: 'Created', value: formatDate(new Date(item.created)) },
+  ];
 
   return (
-    <StyledCard layout={id % 1 === 0 && 'row-reverse'}>
+    <StyledCard layout={item.id % 1 === 0 && 'row-reverse'}>
       <div>
-        <h2>{name}</h2>
-        <h6>CHARATER ID: {id}</h6>
-        <hr/>
-        <span> Estatus: {status}</span>
-        <hr/>
-        <span>Species: {species}</span>
-        <hr/>
-        <span>Type: {type}</span>
-        <hr/>
-        <span>Gender: {gender}</span>
-        <hr/>
-        <span>Location: {location["name"]}</span>
-        <hr/>
-        <span>Origin: {origin["name"]}</span>
-        <hr/>
-        <span>Created: {formatDate(new Date(created))}</span>
-        <br/>
+        <h2>{item.name}</h2>
+        <p>CHARACTER ID: {item.id}</p>
+        {characterDetails.map((detail, index) => (
+          <React.Fragment key={index}>
+            <hr/>
+            <p>{detail.label}: {detail.value}</p>
+          </React.Fragment>
+        ))}
       </div>
-      <br/>
       <div>
-        <img src={image} alt='img' />
+        <img src={item.image} alt={item.name} />
       </div>
-      
     </StyledCard>
   )
 }

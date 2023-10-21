@@ -1,17 +1,18 @@
-import styled from 'styled-components'
+import styled from "styled-components";
 
 export const Button = styled.button`
-  border-radius: 50px;
+  background-color: #4caf50; /* Green */
   border: none;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-  cursor: pointer;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
   font-size: 16px;
-  font-weight: 700;
-  padding: 15px 60px;
-  background-color: ${({ bg }) => bg || '#fff'};
-  color: ${({ color }) => color || '#333'};
-  &:hover {
-    opacity: 0.9;
-    transform: scale(0.98);
+  margin: 4px 2px;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
   }
-`
+`;

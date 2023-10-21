@@ -1,60 +1,133 @@
-import Card from "./components/Card/Card";
-import { Container } from './components/styles/Container.styled';
-import { useQuery, gql } from '@apollo/client';
+import React, { useState, useEffect, useCallback } from "react";
+import { useQuery, useLazyQuery } from "@apollo/client";
+import { Container } from "./components/styles/Container.styled";
 import Global from "./components/styles/Global.styled";
-import { ThemeProvider } from 'styled-components'
-
+import { ThemeProvider } from "styled-components";
+import RandomCharacter from "./components/RandomCharacter";
+import CharacterList from "./components/CharacterList";
+import Filters from "./components/Filters";
+import SearchBar from "./components/SearchBar";
+import Pagination from "./components/Pagination";
+import {
+  GET_TOTAL_CHARACTERS,
+  GET_CHARACTER,
+  GET_CHARACTERS_BY_NAME,
+  GET_PAGINATED_CHARACTERS,
+} from "./api/queries";
 
 const theme = {
   colors: {
-    body: '#002449'
+    body: "#002449",
   },
-  mobile: '768px',
-}
-
+  mobile: "768px",
+};
 
 const App = () => {
+  // Estados
+  const [currentPage, setCurrentPage] = useState(1);
+  const [randomCharacter, setRandomCharacter] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("");
+  const [genderFilter, setGenderFilter] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const GET_CHARACTERS = gql`
-      query Getcharacters {
-        characters{
-          results{
-            image
-            name
-            id
-            status
-            type
-            gender
-            species
-            created
-            location{
-              name
-            }
-            origin{
-              name
-            }
-          }
-        }
-      }
-    `;
+  // Consultas
+  const { data } = useQuery(GET_TOTAL_CHARACTERS);
+  const [getCharacter, { loading: randomLoading, data: characterData }] =
+    useLazyQuery(GET_CHARACTER);
+  const [getPaginatedCharacters, { loading: listLoading, data: listData }] =
+    useLazyQuery(GET_PAGINATED_CHARACTERS);
+  const [getCharactersByName, { loading: searchLoading, data: searchData }] =
+    useLazyQuery(GET_CHARACTERS_BY_NAME);
 
-  const { loading, error, data } = useQuery(GET_CHARACTERS);
+  // Controladores de eventos
+  const handleButtonClick = useCallback(() => {
+    if (data && data.characters) {
+      const totalCharacters = data.characters.info.count;
+      const randomId = Math.floor(Math.random() * totalCharacters) + 1;
+      getCharacter({ variables: { id: randomId } });
+    }
+  }, [data, getCharacter]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
+  const handleSearchChange = useCallback(
+    (event) => {
+      setSearchQuery(event.target.value);
+      getCharactersByName({ variables: { name: event.target.value } });
+    },
+    [getCharactersByName]
+  );
+
+  // Efectos secundarios
+  useEffect(() => {
+    if (characterData) {
+      setRandomCharacter(characterData.character);
+    }
+  }, [characterData]);
+
+  useEffect(() => {
+    handleButtonClick();
+  }, [handleButtonClick]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      getCharactersByName({ variables: { name: searchQuery } });
+    } else {
+      getPaginatedCharacters({
+        variables: {
+          status: statusFilter,
+          gender: genderFilter,
+          page: currentPage,
+        },
+      });
+    }
+  }, [
+    searchQuery,
+    statusFilter,
+    genderFilter,
+    currentPage,
+    getCharactersByName,
+    getPaginatedCharacters,
+  ]);
 
   return (
     <>
-    <ThemeProvider theme={theme}>
-      <Global/>
-       <Container>
-          {data.characters.results?.map((item, index) => (
-            <Card key={index} item={item} />
-          ))}
+      <ThemeProvider theme={theme}>
+        <Global />
+        <Container>
+          <RandomCharacter
+            character={randomCharacter}
+            onButtonClick={handleButtonClick}
+            loading={randomLoading}
+          />
+
+          <Filters
+            statusFilter={statusFilter}
+            genderFilter={genderFilter}
+            onStatusChange={(e) => setStatusFilter(e.target.value)}
+            onGenderChange={(e) => setGenderFilter(e.target.value)}
+          />
+
+          <SearchBar
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+          />
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={listData ? listData.characters.info.pages : 0}
+            onPageChange={setCurrentPage}
+          />
+
+          <CharacterList
+            characters={
+              (searchData && searchData.characters.results) ||
+              (listData && listData.characters.results)
+            }
+            loading={searchLoading || listLoading}
+          />
         </Container>
-    </ThemeProvider>
+      </ThemeProvider>
     </>
-  )
+  );
 };
 
 export default App;
