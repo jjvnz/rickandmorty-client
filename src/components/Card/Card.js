@@ -1,43 +1,52 @@
 import React from 'react';
 import { StyledCard } from '../styles/Card.styled';
 
-function padTo2Digits(num) {
-  return num.toString().padStart(2, '0');
-}
+const padTo2Digits = (num) => num.toString().padStart(2, '0');
 
-function formatDate(date) {
-  return [
-    padTo2Digits(date.getDate()),
-    padTo2Digits(date.getMonth() + 1),
-    date.getFullYear(),
-  ].join('/');
-}
-export default function Card({ item }) {
+const formatDate = (date) => {
+  const formattedDate = new Date(date);
+  const day = padTo2Digits(formattedDate.getDate());
+  const month = padTo2Digits(formattedDate.getMonth() + 1);
+  const year = formattedDate.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+const CharacterDetail = ({ label, value }) => (
+  <>
+    <hr />
+    <p>{label}: {value}</p>
+  </>
+);
+
+const Card = ({ item }) => {
+  const { id, name, status, species, type, gender, location, origin, created, image } = item;
+
   const characterDetails = [
-    { label: 'Estatus', value: item.status },
-    { label: 'Species', value: item.species },
-    { label: 'Type', value: item.type },
-    { label: 'Gender', value: item.gender },
-    { label: 'Location', value: item.location.name },
-    { label: 'Origin', value: item.origin.name },
-    { label: 'Created', value: formatDate(new Date(item.created)) },
+    { label: 'Estatus', value: status },
+    { label: 'Species', value: species },
+    { label: 'Type', value: type },
+    { label: 'Gender', value: gender },
+    { label: 'Location', value: location.name },
+    { label: 'Origin', value: origin.name },
+    { label: 'Created', value: formatDate(created) },
   ];
 
+  const isRowReverse = id % 1 === 0;
+
   return (
-    <StyledCard layout={item.id % 1 === 0 && 'row-reverse'}>
+    <StyledCard layout={isRowReverse && 'row-reverse'}>
       <div>
-        <h2>{item.name}</h2>
-        <p>CHARACTER ID: {item.id}</p>
+        <h2>{name}</h2>
+        <p>CHARACTER ID: {id}</p>
         {characterDetails.map((detail, index) => (
-          <React.Fragment key={index}>
-            <hr/>
-            <p>{detail.label}: {detail.value}</p>
-          </React.Fragment>
+          <CharacterDetail key={index} label={detail.label} value={detail.value} />
         ))}
       </div>
       <div>
-        <img src={item.image} alt={item.name} />
+        <img src={image} alt={name} />
       </div>
     </StyledCard>
-  )
-}
+  );
+};
+
+export default Card;

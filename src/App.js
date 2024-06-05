@@ -23,15 +23,13 @@ const theme = {
 };
 
 const App = () => {
-  // Estados
   const [currentPage, setCurrentPage] = useState(1);
   const [randomCharacter, setRandomCharacter] = useState(null);
   const [statusFilter, setStatusFilter] = useState("");
   const [genderFilter, setGenderFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Consultas
-  const { data } = useQuery(GET_TOTAL_CHARACTERS);
+  const { data: totalCharactersData } = useQuery(GET_TOTAL_CHARACTERS);
   const [getCharacter, { loading: randomLoading, data: characterData }] =
     useLazyQuery(GET_CHARACTER);
   const [getPaginatedCharacters, { loading: listLoading, data: listData }] =
@@ -39,36 +37,17 @@ const App = () => {
   const [getCharactersByName, { loading: searchLoading, data: searchData }] =
     useLazyQuery(GET_CHARACTERS_BY_NAME);
 
-  // Controladores de eventos
   const handleButtonClick = useCallback(() => {
-    if (data && data.characters) {
-      const totalCharacters = data.characters.info.count;
+    if (totalCharactersData && totalCharactersData.characters) {
+      const totalCharacters = totalCharactersData.characters.info.count;
       const randomId = Math.floor(Math.random() * totalCharacters) + 1;
       getCharacter({ variables: { id: randomId } });
     }
-  }, [data, getCharacter]);
+  }, [totalCharactersData, getCharacter]);
 
-  const handleSearchChange = useCallback(
-    (event) => {
-      setSearchQuery(event.target.value);
-      getCharactersByName({ variables: { name: event.target.value } });
-    },
-    [getCharactersByName]
-  );
-
-  const characterList = useMemo(() => {
-    return (
-      (searchData && searchData.characters.results) ||
-      (listData && listData.characters.results)
-    );
-  }, [searchData, listData]);
-
-  // Efectos secundarios
-  useEffect(() => {
-    if (characterData) {
-      setRandomCharacter(characterData.character);
-    }
-  }, [characterData]);
+  const handleSearchChange = useCallback((event) => {
+    setSearchQuery(event.target.value);
+  }, []);
 
   useEffect(() => {
     handleButtonClick();
@@ -84,13 +63,7 @@ const App = () => {
         },
       });
     }
-  }, [
-    searchQuery,
-    statusFilter,
-    genderFilter,
-    currentPage,
-    getPaginatedCharacters,
-  ]);
+  }, [searchQuery, statusFilter, genderFilter, currentPage, getPaginatedCharacters]);
 
   useEffect(() => {
     if (searchQuery) {
@@ -98,42 +71,49 @@ const App = () => {
     }
   }, [searchQuery, getCharactersByName]);
 
+  useEffect(() => {
+    if (characterData) {
+      setRandomCharacter(characterData.character);
+    }
+  }, [characterData]);
+
+  const characterList = useMemo(() => {
+    return (
+      (searchData && searchData.characters.results) ||
+      (listData && listData.characters.results)
+    );
+  }, [searchData, listData]);
+
   return (
-    <>
-      <ThemeProvider theme={theme}>
-        <Global />
-        <Container>
-          <RandomCharacter
-            character={randomCharacter}
-            onButtonClick={handleButtonClick}
-            loading={randomLoading}
-          />
-
-          <Filters
-            statusFilter={statusFilter}
-            genderFilter={genderFilter}
-            onStatusChange={(e) => setStatusFilter(e.target.value)}
-            onGenderChange={(e) => setGenderFilter(e.target.value)}
-          />
-
-          <SearchBar
-            searchQuery={searchQuery}
-            onSearchChange={handleSearchChange}
-          />
-
-          <Pagination
-            currentPage={currentPage}
-            totalPages={listData ? listData.characters.info.pages : 0}
-            onPageChange={setCurrentPage}
-          />
-
-          <CharacterList
-            characters={characterList}
-            loading={searchLoading || listLoading}
-          />
-        </Container>
-      </ThemeProvider>
-    </>
+    <ThemeProvider theme={theme}>
+      <Global />
+      <Container>
+        <RandomCharacter
+          character={randomCharacter}
+          onButtonClick={handleButtonClick}
+          loading={randomLoading}
+        />
+        <Filters
+          statusFilter={statusFilter}
+          genderFilter={genderFilter}
+          onStatusChange={(e) => setStatusFilter(e.target.value)}
+          onGenderChange={(e) => setGenderFilter(e.target.value)}
+        />
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
+        />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={listData ? listData.characters.info.pages : 0}
+          onPageChange={setCurrentPage}
+        />
+        <CharacterList
+          characters={characterList}
+          loading={searchLoading || listLoading}
+        />
+      </Container>
+    </ThemeProvider>
   );
 };
 
